@@ -11,13 +11,32 @@ public struct RefreshableScrollView<Content: View>: View {
     let content: Content
     let scrollType: ScrollType
     var activityView: AnyView
+    public typealias Pull = (_ height: CGFloat, _ rotation: Angle, _ loading: Bool, _ frozen: Bool) -> AnyView
+    var pullView: Pull!
 
-    public init(height: CGFloat = 80, refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), @ViewBuilder content: () -> Content) {
+    public init(height: CGFloat = 80, refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), pullView: Pull? = nil, @ViewBuilder content: () -> Content) {
         self.threshold = height
         self._refreshing = refreshing
         self.content = content()
         self.scrollType = scrollType
         self.activityView = activityView
+        self.pullView = pullView
+        
+        if self.pullView == nil {
+            self.pullView = defaultPullView(height:rotation:loading:frozen:)
+        }
+    }
+    
+    public func defaultPullView(height: CGFloat, rotation: Angle, loading: Bool, frozen: Bool) -> AnyView {
+        let image = Image(systemName: "arrow.down") // If not loading, show the arrow
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: height * 0.25, height: height * 0.25).fixedSize()
+            .padding(height * 0.375)
+            .rotationEffect(rotation)
+            .offset(y: -height + (loading && frozen ? +height : 0.0))
+        
+        return AnyView(image)
     }
     
     public var body: some View {
@@ -28,7 +47,7 @@ public struct RefreshableScrollView<Content: View>: View {
                     
                     VStack { self.content }.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
                     
-                    SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView)
+                    SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
                 }
             }
             .background(FixedView())
@@ -90,6 +109,7 @@ public struct RefreshableScrollView<Content: View>: View {
         var frozen: Bool
         var rotation: Angle
         var activityView: AnyView
+        var pullView: Pull
         
         var body: some View {
             Group {
@@ -101,13 +121,14 @@ public struct RefreshableScrollView<Content: View>: View {
                     }.frame(height: height).fixedSize()
                         .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
                 } else {
-                    Image(systemName: "arrow.down") // If not loading, show the arrow
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: height * 0.25, height: height * 0.25).fixedSize()
-                        .padding(height * 0.375)
-                        .rotationEffect(rotation)
-                        .offset(y: -height + (loading && frozen ? +height : 0.0))
+//                    Image(systemName: "arrow.down") // If not loading, show the arrow
+//                        .resizable()
+//                        .aspectRatio(contentMode: .fit)
+//                        .frame(width: height * 0.25, height: height * 0.25).fixedSize()
+//                        .padding(height * 0.375)
+//                        .rotationEffect(rotation)
+//                        .offset(y: -height + (loading && frozen ? +height : 0.0))
+                    self.pullView(height, rotation, loading, frozen)
                 }
             }
         }
