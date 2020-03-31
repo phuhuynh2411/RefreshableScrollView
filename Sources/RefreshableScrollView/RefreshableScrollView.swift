@@ -165,7 +165,7 @@ public struct RefreshableScrollView<Content: View>: View {
     }
 }
 
-private struct RefreshableKeyTypes {
+struct RefreshableKeyTypes {
     enum ViewType: Int {
         case movingView
         case fixedView
