@@ -10,12 +10,14 @@ public struct RefreshableScrollView<Content: View>: View {
     @Binding var refreshing: Bool
     let content: Content
     let scrollType: ScrollType
+    var activityView: AnyView
 
-    public init(height: CGFloat = 80, refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, @ViewBuilder content: () -> Content) {
+    public init(height: CGFloat = 80, refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), @ViewBuilder content: () -> Content) {
         self.threshold = height
         self._refreshing = refreshing
         self.content = content()
         self.scrollType = scrollType
+        self.activityView = activityView
     }
     
     public var body: some View {
@@ -26,7 +28,7 @@ public struct RefreshableScrollView<Content: View>: View {
                     
                     VStack { self.content }.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
                     
-                    SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation)
+                    SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView)
                 }
             }
             .background(FixedView())
@@ -87,14 +89,14 @@ public struct RefreshableScrollView<Content: View>: View {
         var loading: Bool
         var frozen: Bool
         var rotation: Angle
-        
+        var activityView: AnyView
         
         var body: some View {
             Group {
                 if self.loading { // If loading, show the activity control
                     VStack {
                         Spacer()
-                        ActivityRep()
+                        self.activityView
                         Spacer()
                     }.frame(height: height).fixedSize()
                         .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
@@ -129,12 +131,13 @@ public struct RefreshableScrollView<Content: View>: View {
         }
     }
     
-    struct ActivityRep: UIViewRepresentable {
-        func makeUIView(context: UIViewRepresentableContext<ActivityRep>) -> UIActivityIndicatorView {
+    public struct ActivityRep: UIViewRepresentable {
+        public init() {}
+        public func makeUIView(context: UIViewRepresentableContext<ActivityRep>) -> UIActivityIndicatorView {
             return UIActivityIndicatorView()
         }
         
-        func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityRep>) {
+        public func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityRep>) {
             uiView.startAnimating()
         }
     }
