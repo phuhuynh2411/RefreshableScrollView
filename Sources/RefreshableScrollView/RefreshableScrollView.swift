@@ -139,7 +139,7 @@ public struct RefreshableScrollView<Content: View>: View {
         }
     }
     
-    enum ScrollType {
+    public enum ScrollType {
         case scrollView
         case list
     }
