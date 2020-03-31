@@ -36,7 +36,7 @@ public struct RefreshableScrollView<Content: View>: View {
         }
     }
     
-    private func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {
+    func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {
         DispatchQueue.main.async {
             // Calculate scroll offset
             let movingBounds = values.first { $0.vType == .movingView }?.bounds ?? .zero
