@@ -9,17 +9,18 @@ struct RefreshableScrollView<Content: View>: View {
     var threshold: CGFloat = 80
     @Binding var refreshing: Bool
     let content: Content
+    let scrollType: ScrollType
 
-    init(height: CGFloat = 80, refreshing: Binding<Bool>, @ViewBuilder content: () -> Content) {
+    init(height: CGFloat = 80, refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, @ViewBuilder content: () -> Content) {
         self.threshold = height
         self._refreshing = refreshing
         self.content = content()
-
+        self.scrollType = scrollType
     }
     
     var body: some View {
         return VStack {
-            List {
+            WrapperView(self.scrollType) {
                 ZStack(alignment: .top) {
                     MovingView()
                     
@@ -135,6 +136,31 @@ struct RefreshableScrollView<Content: View>: View {
         
         func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityRep>) {
             uiView.startAnimating()
+        }
+    }
+    
+    enum ScrollType {
+        case scrollView
+        case list
+    }
+    
+    struct WrapperView <Content>: View where Content: View {
+        let scrollType: ScrollType
+        let content: Content
+        
+        init(_ scrollType: ScrollType, @ViewBuilder content: ()-> Content) {
+            self.scrollType = scrollType
+            self.content = content()
+        }
+        
+        var body: some View {
+            Group {
+                if self.scrollType == .scrollView {
+                    ScrollView { self.content }
+                } else {
+                    List { self.content }
+                }
+            }
         }
     }
 }
