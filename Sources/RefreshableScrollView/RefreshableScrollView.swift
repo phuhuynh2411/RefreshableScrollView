@@ -18,7 +18,7 @@ public struct RefreshableScrollView<Content: View>: View {
         self.scrollType = scrollType
     }
     
-    var body: some View {
+    public var body: some View {
         return VStack {
             WrapperView(self.scrollType) {
                 ZStack(alignment: .top) {
