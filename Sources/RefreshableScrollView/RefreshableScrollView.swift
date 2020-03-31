@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct RefreshableScrollView<Content: View>: View {
+public struct RefreshableScrollView<Content: View>: View {
     @State private var previousScrollOffset: CGFloat = 0
     @State private var scrollOffset: CGFloat = 0
     @State private var frozen: Bool = false
