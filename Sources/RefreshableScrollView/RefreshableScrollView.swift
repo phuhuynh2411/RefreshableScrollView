@@ -36,7 +36,7 @@ public struct RefreshableScrollView<Content: View>: View {
         }
     }
     
-    func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {
+    private func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {
         DispatchQueue.main.async {
             // Calculate scroll offset
             let movingBounds = values.first { $0.vType == .movingView }?.bounds ?? .zero
@@ -165,7 +165,7 @@ public struct RefreshableScrollView<Content: View>: View {
     }
 }
 
-struct RefreshableKeyTypes {
+private struct RefreshableKeyTypes {
     enum ViewType: Int {
         case movingView
         case fixedView
