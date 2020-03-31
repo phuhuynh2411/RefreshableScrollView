@@ -12,8 +12,8 @@ public struct RefreshableScrollView<Content: View>: View {
     let scrollType: ScrollType
     let activityView: AnyView
     public typealias Pull = (_ height: CGFloat, _ rotation: Angle, _ loading: Bool, _ frozen: Bool) -> AnyView
-    let pullView: Pull!
-    public typealias Action: ()->Void
+    var pullView: Pull!
+    public typealias Action = ()->Void
     let action: Action?
 
     public init(height: CGFloat = 80, refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), pullView: Pull? = nil, action: Action? = nil, @ViewBuilder content: () -> Content) {
