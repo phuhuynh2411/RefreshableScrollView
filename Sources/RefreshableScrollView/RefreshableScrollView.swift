@@ -73,7 +73,7 @@ public struct RefreshableScrollView<Content: View>: View {
             // Crossing the threshold on the way down, we start the refresh process
             if !self.refreshing && (self.scrollOffset > self.threshold && self.previousScrollOffset <= self.threshold) {
                 self.refreshing = true
-                self.action
+                self.action?()
             }
             
             if self.refreshing {
