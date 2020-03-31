@@ -3,10 +3,11 @@
 A refershable scroll view that supports List and ScrollView
 
 The original code from this article https://swiftui-lab.com/scrollview-pull-to-refresh/. It helped me a lot. Thank you.
+![Refresh](refresh.gif)
 
-## Platform
-iOS
-macOS
+## Platform Support
+* iOS
+* macOS
 
 ## Installation
 In your project, go to File -> Swift Packages -> Add Package Dependency. Copy and paste the url below into the search box
