@@ -10,17 +10,20 @@ public struct RefreshableScrollView<Content: View>: View {
     @Binding var refreshing: Bool
     let content: Content
     let scrollType: ScrollType
-    var activityView: AnyView
+    let activityView: AnyView
     public typealias Pull = (_ height: CGFloat, _ rotation: Angle, _ loading: Bool, _ frozen: Bool) -> AnyView
-    var pullView: Pull!
+    let pullView: Pull!
+    public typealias Action: ()->Void
+    let action: Action?
 
-    public init(height: CGFloat = 80, refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), pullView: Pull? = nil, @ViewBuilder content: () -> Content) {
+    public init(height: CGFloat = 80, refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), pullView: Pull? = nil, action: Action? = nil, @ViewBuilder content: () -> Content) {
         self.threshold = height
         self._refreshing = refreshing
         self.content = content()
         self.scrollType = scrollType
         self.activityView = activityView
         self.pullView = pullView
+        self.action = action
         
         if self.pullView == nil {
             self.pullView = defaultPullView(height:rotation:loading:frozen:)
@@ -70,6 +73,7 @@ public struct RefreshableScrollView<Content: View>: View {
             // Crossing the threshold on the way down, we start the refresh process
             if !self.refreshing && (self.scrollOffset > self.threshold && self.previousScrollOffset <= self.threshold) {
                 self.refreshing = true
+                self.action
             }
             
             if self.refreshing {
