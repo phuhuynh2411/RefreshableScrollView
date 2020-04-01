@@ -60,39 +60,26 @@ public struct RefreshableScrollView<Content: View>: View {
                     }
                 }
             } else {
-//                VStack{
-//                    ZStack(alignment: .top) {
-//                        List {
-//
-//                            self.content
-//                            .listRowBackground(MovingView())
-//                        }
-//                        .alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
-//                        .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
-//                            self.refreshLogic(values: values)
-//                        }
-//
-//
-//                        SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
-//                    }
-//                    .background(FixedView())
-//                }
-                
-                VStack {
-                    ScrollView {
-                        ZStack(alignment: .top) {
-                            MovingView()
-                            
-                            VStack { List{ self.content } }.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
-                            
-                            SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
+                VStack{
+                    ZStack(alignment: .top) {
+                        List {
+
+                            self.content
+                        
                         }
+                        .alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
+                        .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
+                            self.refreshLogic(values: values)
+                        }
+                        .background(MovingView())
+
+
+                        SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
                     }
                     .background(FixedView())
-                    .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
-                        self.refreshLogic(values: values)
-                    }
                 }
+                
+                
                 
             }
         }
