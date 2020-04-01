@@ -68,7 +68,7 @@ public struct RefreshableScrollView<Content: View>: View {
                         }
                         //.offset(x: 0, y: (self.refreshing && self.frozen) ? -self.threshold : 0.0)
                         .background(FixedView())
-                            //.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
+                        .alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
                             
                             .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
                                 self.refreshLogic(values: values)
