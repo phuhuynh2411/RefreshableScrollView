@@ -174,7 +174,7 @@ public struct RefreshableScrollView<Content: View>: View {
             GeometryReader { proxy in
                 Color
                     .red
-                    .frame(height: 70)
+                    //.frame(height: 70)
                     .preference(key: RefreshableKeyTypes.PrefKey.self, value: [RefreshableKeyTypes.PrefData(vType: .fixedView, bounds: proxy.frame(in: .global))])
             }
         }
