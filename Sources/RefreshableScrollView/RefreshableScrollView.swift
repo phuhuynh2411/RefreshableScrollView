@@ -7,7 +7,7 @@ public struct RefreshableScrollView<Content: View>: View {
     @State private var rotation: Angle = .degrees(0)
     
     var threshold: CGFloat = 80
-    @Binding var refreshing: Bool
+    @State var refreshing: Bool = false
     let content: Content
     let scrollType: ScrollType
     let activityView: AnyView
@@ -16,9 +16,7 @@ public struct RefreshableScrollView<Content: View>: View {
     public typealias Action = ()->Void
     let action: Action?
 
-    public init(height: CGFloat = 80, refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), pullView: Pull? = nil, action: Action? = nil, @ViewBuilder content: () -> Content) {
-        self.threshold = height
-        self._refreshing = refreshing
+    public init(scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), pullView: Pull? = nil, action: Action? = nil, @ViewBuilder content: () -> Content) {
         self.content = content()
         self.scrollType = scrollType
         self.activityView = activityView
