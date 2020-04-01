@@ -60,7 +60,7 @@ public struct RefreshableScrollView<Content: View>: View {
                     }
                 }
             } else {
-                VStack {
+                VStack{
                     ZStack(alignment: .top) {
                         List {
                             MovingView()
@@ -74,9 +74,9 @@ public struct RefreshableScrollView<Content: View>: View {
                         
                         SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
                     }
-                    
+                    .background(FixedView())
                 }
-                .background(FixedView())
+                
             }
         }
     }
