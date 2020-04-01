@@ -43,23 +43,44 @@ public struct RefreshableScrollView<Content: View>: View {
     }
     
     public var body: some View {
-        return VStack {
-            WrapperView(self.scrollType) {
-                ZStack(alignment: .top) {
-                    MovingView()
-                    
-                    VStack { self.content }.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
-                    
-                    SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
+        Group {
+            if self.scrollType == .scrollView {
+                 VStack {
+                    ScrollView {
+                        ZStack(alignment: .top) {
+                            MovingView()
+                            
+                            VStack { self.content }.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
+                            
+                            SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
+                        }
+                    }
+                    .background(FixedView())
+                    .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
+                        self.refreshLogic(values: values)
+                    }
                 }
-            }
-            .background(FixedView())
-            .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
-                self.refreshLogic(values: values)
+            } else {
+                VStack {
+                    ZStack(alignment: .top) {
+                        MovingView()
+                        
+                        SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
+                        
+                        List {
+                            self.content
+                        }
+                        .background(FixedView())
+                        .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
+                            self.refreshLogic(values: values)
+                        }
+                    }
+                }
             }
         }
     }
     
+
     func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {
         DispatchQueue.main.async {
             // Calculate scroll offset
@@ -125,13 +146,6 @@ public struct RefreshableScrollView<Content: View>: View {
                     }.frame(height: height).fixedSize()
                         .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
                 } else {
-//                    Image(systemName: "arrow.down") // If not loading, show the arrow
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: height * 0.25, height: height * 0.25).fixedSize()
-//                        .padding(height * 0.375)
-//                        .rotationEffect(rotation)
-//                        .offset(y: -height + (loading && frozen ? +height : 0.0))
                     self.pullView(height, rotation, loading, frozen)
                 }
             }
