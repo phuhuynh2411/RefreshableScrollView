@@ -148,7 +148,13 @@ public struct RefreshableScrollView<Content: View>: View {
                     }.frame(height: height).fixedSize()
                         .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
                 } else {
-                    self.pullView(height, rotation, loading, frozen)
+                   Image(systemName: "arrow.down") // If not loading, show the arrow
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: height * 0.25, height: height * 0.25).fixedSize()
+                        .padding(height * 0.375)
+                        .rotationEffect(rotation)
+                        .offset(y: -height + (loading && frozen ? +height : 0.0))
                 }
             }
         }
