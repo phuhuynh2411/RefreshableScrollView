@@ -63,15 +63,18 @@ public struct RefreshableScrollView<Content: View>: View {
                 VStack{
                     ZStack(alignment: .top) {
                         SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
-                        List {
-                            self.content
-                            .background(MovingView())
-                        }
-                        .background(FixedView())
-                        //.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
-                        .offset(x: 0, y: (self.refreshing && self.frozen) ? -self.threshold : 0.0)
-                        .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
-                            self.refreshLogic(values: values)
+                        VStack {
+                            List {
+                                self.content
+                                .background(MovingView())
+                            }
+                            .offset(x: 0, y: (self.refreshing && self.frozen) ? -self.threshold : 0.0)
+                            .background(FixedView())
+                            //.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
+                            
+                            .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
+                                self.refreshLogic(values: values)
+                            }
                         }
                     }
                 }
