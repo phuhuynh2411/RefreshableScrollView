@@ -95,6 +95,8 @@ public struct RefreshableScrollView<Content: View>: View {
             
             self.scrollOffset  = movingBounds.minY - fixedBounds.minY
             print(self.scrollOffset)
+            print("moving bound: \(movingBounds.minY)")
+            print("fixed bound: \(fixedBounds.minY)")
             
             self.rotation = self.symbolRotation(self.scrollOffset)
             
