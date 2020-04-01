@@ -68,13 +68,14 @@ public struct RefreshableScrollView<Content: View>: View {
                         }
                         .alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
                     .offset(x: 0, y: 80)
-                        .background(FixedView())
+                        
                         .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
                             self.refreshLogic(values: values)
                         }
                         
                         SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
                     }
+                    .background(FixedView())
                 }
             }
         }
