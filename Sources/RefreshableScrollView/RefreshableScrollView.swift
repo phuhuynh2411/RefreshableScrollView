@@ -126,7 +126,7 @@ public struct RefreshableScrollView<Content: View>: View {
             let h = Double(self.threshold)
             let d = Double(scrollOffset)
             let v = max(min(d - (h * 0.6), h * 0.4), 0)
-            print(.degrees(180 * v / (h * 0.4)))
+            print(Angle.degrees(180 * v / (h * 0.4)))
             return .degrees(180 * v / (h * 0.4))
         }
     }
