@@ -70,10 +70,11 @@ public struct RefreshableScrollView<Content: View>: View {
                         .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
                             self.refreshLogic(values: values)
                         }
+                        .background(FixedView())
                         
                         SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
                     }
-                    .background(FixedView())
+                    
                 }
             }
         }
