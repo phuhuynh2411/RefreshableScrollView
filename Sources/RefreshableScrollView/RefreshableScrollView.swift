@@ -159,6 +159,7 @@ public struct RefreshableScrollView<Content: View>: View {
                         .padding(height * 0.375)
                         .rotationEffect(rotation)
                         .offset(y: -height + (loading && frozen ? +height : 0.0))
+                    .id(UUID().uuidString)
                 }
             }
         }
