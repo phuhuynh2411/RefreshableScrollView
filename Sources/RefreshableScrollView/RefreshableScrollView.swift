@@ -169,11 +169,11 @@ public struct RefreshableScrollView<Content: View>: View {
                         Image(systemName: "arrow.down") // If not loading, show the arrow
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            //.frame(width: height * 0.25, height: height * 0.25).fixedSize()
+                            .frame(width: height * 0.25, height: height * 0.25).fixedSize()
                             .padding(height * 0.375)
                             .rotationEffect(rotation)
                         Spacer()
-                    }.frame(height: height).fixedSize()
+                    }//.frame(height: height).fixedSize()
                         .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
                 }
             }
