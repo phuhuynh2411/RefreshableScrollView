@@ -63,6 +63,7 @@ public struct RefreshableScrollView<Content: View>: View {
             } else {
                 VStack{
                     ZStack(alignment: .top) {
+                        SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView, offset: self.fixedMinY)
                         List {
                             self.content
                                 .background(MovingView())
@@ -74,9 +75,6 @@ public struct RefreshableScrollView<Content: View>: View {
                             .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
                                 self.refreshLogic(values: values)
                         }
-                        
-                        SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView, offset: self.fixedMinY)
-                       
                     }
                     
                 }
