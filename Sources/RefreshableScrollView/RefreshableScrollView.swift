@@ -15,6 +15,7 @@ public struct RefreshableScrollView<Content: View>: View {
     var pullView: Pull!
     public typealias Action = ()->Void
     let action: Action?
+    @State var fixedMinY: CGFloat = 0
 
     public init(refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), pullView: Pull? = nil, action: Action? = nil, @ViewBuilder content: () -> Content) {
         self.content = content()
@@ -51,7 +52,7 @@ public struct RefreshableScrollView<Content: View>: View {
                             
                             VStack { self.content }.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
                             
-                            SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
+                            SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView, offset: self.threshold)
                         }
                     }
                     .background(FixedView())
@@ -74,7 +75,7 @@ public struct RefreshableScrollView<Content: View>: View {
                                 self.refreshLogic(values: values)
                         }
                         
-                        SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
+                        SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView, offset: self.fixedMinY)
                        
                     }
                     
@@ -90,6 +91,7 @@ public struct RefreshableScrollView<Content: View>: View {
             // Calculate scroll offset
             let movingBounds = values.first { $0.vType == .movingView }?.bounds ?? .zero
             let fixedBounds = values.first { $0.vType == .fixedView }?.bounds ?? .zero
+            self.fixedMinY = fixedBounds.minY
             
             self.scrollOffset  = movingBounds.minY - fixedBounds.minY
             print(self.scrollOffset)
@@ -143,6 +145,7 @@ public struct RefreshableScrollView<Content: View>: View {
         var rotation: Angle
         var activityView: AnyView
         var pullView: Pull
+        var offset: CGFloat
         
         var body: some View {
             Group {
@@ -161,7 +164,7 @@ public struct RefreshableScrollView<Content: View>: View {
                         .frame(width: height * 0.25, height: height * 0.25).fixedSize()
                         .padding(height * 0.375)
                         .rotationEffect(rotation)
-                        .offset(y: -height + 60 + (loading && frozen ? +height : 0.0))
+                    .offset(y: -self.offset + 60 + (loading && frozen ? +self.offset : 0.0))
                 }
             }
         }
