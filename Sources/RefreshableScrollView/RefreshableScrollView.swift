@@ -165,7 +165,7 @@ public struct RefreshableScrollView<Content: View>: View {
 //                    .id(UUID().uuidString)
                     
                     VStack {
-                        Spacer()
+                        //Spacer()
                         Image(systemName: "arrow.down") // If not loading, show the arrow
                             .resizable()
                             .aspectRatio(contentMode: .fit)
