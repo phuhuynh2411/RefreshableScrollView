@@ -153,6 +153,7 @@ public struct RefreshableScrollView<Content: View>: View {
                 } else {
                    Image(systemName: "arrow.down") // If not loading, show the arrow
                         .resizable()
+                        .renderingMode(.original)
                         .aspectRatio(contentMode: .fit)
                         .frame(width: height * 0.25, height: height * 0.25).fixedSize()
                         .padding(height * 0.375)
