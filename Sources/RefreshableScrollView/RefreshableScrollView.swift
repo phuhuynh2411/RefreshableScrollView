@@ -67,15 +67,17 @@ public struct RefreshableScrollView<Content: View>: View {
                                 .background(MovingView())
                         }
                         .offset(x: 0, y: (self.refreshing && self.frozen) ? self.threshold : 0.0)
-                        .background( SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView), alignment: .top)
+                        .background(FixedView())
                         //.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
                             
                             .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
                                 self.refreshLogic(values: values)
                         }
+                        
+                        SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView)
                        
                     }
-                    .background(FixedView())
+                    
                 }
                 
             }
@@ -152,15 +154,27 @@ public struct RefreshableScrollView<Content: View>: View {
                     }.frame(height: height).fixedSize()
                         .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
                 } else {
-                   Image(systemName: "arrow.down") // If not loading, show the arrow
-                        .resizable()
-                        .renderingMode(.original)
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: height * 0.25, height: height * 0.25).fixedSize()
-                        .padding(height * 0.375)
-                        .rotationEffect(rotation)
-                        .offset(y: -height + (loading && frozen ? +height : 0.0))
-                    .id(UUID().uuidString)
+//                   Image(systemName: "arrow.down") // If not loading, show the arrow
+//                        .resizable()
+//                        .renderingMode(.original)
+//                        .aspectRatio(contentMode: .fit)
+//                        .frame(width: height * 0.25, height: height * 0.25).fixedSize()
+//                        .padding(height * 0.375)
+//                        .rotationEffect(rotation)
+//                        .offset(y: -height + (loading && frozen ? +height : 0.0))
+//                    .id(UUID().uuidString)
+                    
+                    VStack {
+                        Spacer()
+                        Image(systemName: "arrow.down") // If not loading, show the arrow
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            //.frame(width: height * 0.25, height: height * 0.25).fixedSize()
+                            .padding(height * 0.375)
+                            .rotationEffect(rotation)
+                        Spacer()
+                    }.frame(height: height).fixedSize()
+                        .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
                 }
             }
         }
