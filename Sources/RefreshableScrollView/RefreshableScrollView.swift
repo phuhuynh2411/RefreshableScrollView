@@ -177,7 +177,7 @@ public struct RefreshableScrollView<Content: View>: View {
                             .rotationEffect(rotation)
                         Spacer()
                     }.frame(height: height).fixedSize()
-                        .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
+                        .offset(y: -self.offset + (loading && frozen ? +self.offset : 0.0))
                 }
             }
         }
