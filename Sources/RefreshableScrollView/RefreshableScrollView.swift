@@ -95,8 +95,6 @@ public struct RefreshableScrollView<Content: View>: View {
             
             self.scrollOffset  = movingBounds.minY - fixedBounds.minY
             print(self.scrollOffset)
-            print("moving bound: \(movingBounds.minY)")
-            print("fixed bound: \(fixedBounds.minY)")
             
             self.rotation = self.symbolRotation(self.scrollOffset)
             
@@ -157,15 +155,6 @@ public struct RefreshableScrollView<Content: View>: View {
                     }.frame(height: height).fixedSize()
                         .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
                 } else {
-//                   Image(systemName: "arrow.down") // If not loading, show the arrow
-//                        .resizable()
-//                        .renderingMode(.original)
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: height * 0.25, height: height * 0.25).fixedSize()
-//                        .padding(height * 0.375)
-//                        .rotationEffect(rotation)
-//                    .offset(y: -self.offset + (loading && frozen ? +self.offset : 0.0))
-                    
                     VStack {
                         Spacer()
                         Image(systemName: "arrow.down") // If not loading, show the arrow
@@ -177,7 +166,7 @@ public struct RefreshableScrollView<Content: View>: View {
                             .rotationEffect(rotation)
                         Spacer()
                     }.frame(height: height).fixedSize()
-                        .offset(y: -self.offset + (loading && frozen ? +self.offset : 0.0))
+                    .offset(y: -self.offset + (loading && frozen ? +self.offset : 0.0))
                 }
             }
         }
