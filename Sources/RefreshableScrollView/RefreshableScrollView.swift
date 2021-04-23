@@ -9,81 +9,42 @@ public struct RefreshableScrollView<Content: View>: View {
     var threshold: CGFloat = 80
     @Binding var refreshing: Bool
     let content: Content
-    let scrollType: ScrollType
-    let activityView: AnyView
-    public typealias Pull = (_ height: CGFloat, _ rotation: Angle, _ loading: Bool, _ frozen: Bool) -> AnyView
-    var pullView: Pull!
     public typealias Action = ()->Void
     let action: Action?
     @State var fixedMinY: CGFloat = 0
 
-    public init(refreshing: Binding<Bool>, scrollType: ScrollType = .scrollView, activityView: AnyView = AnyView(ActivityRep()), pullView: Pull? = nil, action: Action? = nil, @ViewBuilder content: () -> Content) {
+    public init(refreshing: Binding<Bool>, action: Action? = nil, @ViewBuilder content: () -> Content) {
         self.content = content()
-        self.scrollType = scrollType
-        self.activityView = activityView
-        self.pullView = pullView
         self.action = action
         self._refreshing = refreshing
-        
-        if self.pullView == nil {
-            self.pullView = defaultPullView(height:rotation:loading:frozen:)
-        }
-    }
-    
-    public func defaultPullView(height: CGFloat, rotation: Angle, loading: Bool, frozen: Bool) -> AnyView {
-        let image = Image(systemName: "arrow.down") // If not loading, show the arrow
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: height * 0.25, height: height * 0.25).fixedSize()
-            .padding(height * 0.375)
-            .rotationEffect(rotation)
-            .offset(y: -height + (loading && frozen ? +height : 0.0))
-        
-        return AnyView(image)
     }
     
     public var body: some View {
-        Group {
-            if self.scrollType == .scrollView {
-                 VStack {
-                    ScrollView {
-                        ZStack(alignment: .top) {
-                            MovingView()
-                            
-                            VStack { self.content }.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
-                            
-                            SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView, offset: self.threshold)
-                        }
-                    }
-                    .background(FixedView())
-                    .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
-                        self.refreshLogic(values: values)
-                    }
-                }
-            } else {
-                VStack{
-                    ZStack(alignment: .top) {
-                        SymbolView(height: self.threshold, loading: self.refreshing, frozen: self.frozen, rotation: self.rotation, activityView: self.activityView, pullView: self.pullView, offset: self.fixedMinY)
-                        List {
-                            self.content
-                                .background(MovingView())
-                        }
-                        //.offset(x: 0, y: (self.refreshing && self.frozen) ? self.threshold : 0.0)
-                            .background(FixedView())
-                            .offset(y: 100)
-                        
-                        //.alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
-                            
-                            .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
-                                self.refreshLogic(values: values)
-                        }
-                    }
+        VStack {
+            ScrollView {
+                ZStack(alignment: .top) {
+                    MovingView()
+                    
+                    VStack { self.content }
+                        .alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
+                        // add an animation when a view is going up only
+                        .animation(self.refreshing ? .none : .default)
+                    
+                    SymbolView(height: self.threshold,
+                               loading: self.refreshing,
+                               frozen: self.frozen,
+                               rotation: self.rotation,
+                               offset: self.threshold)
                     
                 }
-                
+            }
+            .background(FixedView())
+            .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
+                self.refreshLogic(values: values)
             }
         }
     }
+   
     
 
     func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {
@@ -94,7 +55,6 @@ public struct RefreshableScrollView<Content: View>: View {
             self.fixedMinY = fixedBounds.minY
             
             self.scrollOffset  = movingBounds.minY - fixedBounds.minY
-            print(self.scrollOffset)
             
             self.rotation = self.symbolRotation(self.scrollOffset)
             
@@ -131,7 +91,6 @@ public struct RefreshableScrollView<Content: View>: View {
             let h = Double(self.threshold)
             let d = Double(scrollOffset)
             let v = max(min(d - (h * 0.6), h * 0.4), 0)
-            print(Angle.degrees(180 * v / (h * 0.4)))
             return .degrees(180 * v / (h * 0.4))
         }
     }
@@ -141,32 +100,39 @@ public struct RefreshableScrollView<Content: View>: View {
         var loading: Bool
         var frozen: Bool
         var rotation: Angle
-        var activityView: AnyView
-        var pullView: Pull
         var offset: CGFloat
+        
+        private func pullView() -> some View {
+            return VStack {
+                Spacer()
+                Image(systemName: "arrow.down") // If not loading, show the arrow
+                    .resizable()
+                    .foregroundColor(.blue)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: height * 0.25, height: height * 0.25).fixedSize()
+                    .padding(height * 0.375)
+                    .rotationEffect(rotation)
+                Spacer()
+            }
+            .frame(height: height)
+            .fixedSize()
+            .animation(.easeInOut(duration: 2))
+            .offset(y: -self.offset + (loading && frozen ? +self.offset : 0.0))
+        }
         
         var body: some View {
             Group {
                 if self.loading { // If loading, show the activity control
                     VStack {
                         Spacer()
-                        self.activityView
+                        ActivityRep()
                         Spacer()
-                    }.frame(height: height).fixedSize()
-                        .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
+                    }
+                    .frame(height: height).fixedSize()
+                    .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
+                    
                 } else {
-                    VStack {
-                        Spacer()
-                        Image(systemName: "arrow.down") // If not loading, show the arrow
-                            .resizable()
-                            .renderingMode(.original)
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: height * 0.25, height: height * 0.25).fixedSize()
-                            .padding(height * 0.375)
-                            .rotationEffect(rotation)
-                        Spacer()
-                    }.frame(height: height).fixedSize()
-                    .offset(y: -self.offset + (loading && frozen ? +self.offset : 0.0))
+                    pullView()
                 }
             }
         }
@@ -225,6 +191,7 @@ public struct RefreshableScrollView<Content: View>: View {
             }
         }
     }
+   
 }
 
 struct RefreshableKeyTypes {
