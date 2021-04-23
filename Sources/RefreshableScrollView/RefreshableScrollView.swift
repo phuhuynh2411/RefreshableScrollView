@@ -105,13 +105,16 @@ public struct RefreshableScrollView<Content: View>: View {
         private func pullView() -> some View {
             return VStack {
                 Spacer()
-                Image(systemName: "arrow.down") // If not loading, show the arrow
-                    .resizable()
-                    .foregroundColor(.blue)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: height * 0.25, height: height * 0.25).fixedSize()
-                    .padding(height * 0.375)
-                    .rotationEffect(rotation)
+                HStack {
+                    Text("Pull-down-to-refresh") // localization
+                    Image(systemName: "arrow.down") // If not loading, show the arrow
+                        .resizable()
+                        .foregroundColor(.secondary)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: height * 0.25, height: height * 0.25).fixedSize()
+                        .padding(height * 0.375)
+                        .rotationEffect(rotation)
+                }
                 Spacer()
             }
             .frame(height: height)
