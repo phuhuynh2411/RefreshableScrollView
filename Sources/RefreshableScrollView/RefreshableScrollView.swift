@@ -28,7 +28,8 @@ public struct RefreshableScrollView<Content: View>: View {
                     VStack { self.content }
                         .alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
                         // add an animation when a view is going up only
-                        .animation(self.refreshing ? .none : .default)
+                        .animation(self.frozen && !self.refreshing ? .default : .none)
+                        
                     
                     SymbolView(height: self.threshold,
                                loading: self.refreshing,
