@@ -12,7 +12,7 @@ public struct RefreshableScrollView<Content: View>: View {
     public typealias Action = ()->Void
     let action: Action?
     @State var fixedMinY: CGFloat = 0
-
+    
     public init(refreshing: Binding<Bool>, action: Action? = nil, @ViewBuilder content: () -> Content) {
         self.content = content()
         self.action = action
@@ -25,10 +25,14 @@ public struct RefreshableScrollView<Content: View>: View {
                 ZStack(alignment: .top) {
                     MovingView()
                     
-                    VStack { self.content }
-                        .alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
-                        // add an animation when a view is going up only
-                        .animation(self.frozen && !self.refreshing ? .default : .none)
+                    VStack {
+                        self.content
+                    }
+                    .alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
+                    // add an animation when a view is going up only
+                    //.animation(scrollOffset == 0 ? .default : nil)
+                    //.animation(.default, value: topOffSet)
+                    .animation(.default, value: self.refreshing)
                         
                     
                     SymbolView(height: self.threshold,
@@ -45,9 +49,7 @@ public struct RefreshableScrollView<Content: View>: View {
             }
         }
     }
-   
     
-
     func refreshLogic(values: [RefreshableKeyTypes.PrefData]) {
         DispatchQueue.main.async {
             // Calculate scroll offset
@@ -69,7 +71,6 @@ public struct RefreshableScrollView<Content: View>: View {
                 // Crossing the threshold on the way up, we add a space at the top of the scrollview
                 if self.previousScrollOffset > self.threshold && self.scrollOffset <= self.threshold {
                     self.frozen = true
-
                 }
             } else {
                 // remove the sapce at the top of the scroll view
@@ -108,6 +109,7 @@ public struct RefreshableScrollView<Content: View>: View {
                 Spacer()
                 HStack {
                     Text("Pull-down-to-refresh") // localization
+                        .foregroundColor(.secondary)
                     Image(systemName: "arrow.down") // If not loading, show the arrow
                         .resizable()
                         .foregroundColor(.secondary)
@@ -195,7 +197,7 @@ public struct RefreshableScrollView<Content: View>: View {
             }
         }
     }
-   
+    
 }
 
 struct RefreshableKeyTypes {
