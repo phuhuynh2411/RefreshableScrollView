@@ -30,16 +30,13 @@ public struct RefreshableScrollView<Content: View>: View {
                     }
                     .alignmentGuide(.top, computeValue: { d in (self.refreshing && self.frozen) ? -self.threshold : 0.0 })
                     // add an animation when a view is going up only
-                    //.animation(scrollOffset == 0 ? .default : nil)
-                    //.animation(.default, value: topOffSet)
                     .animation(.default, value: self.refreshing)
-                        
                     
                     SymbolView(height: self.threshold,
-                               loading: self.refreshing,
+                               refreshing: self.refreshing,
                                frozen: self.frozen,
                                rotation: self.rotation,
-                               offset: self.threshold)
+                               offset: self.scrollOffset)
                     
                 }
             }
@@ -99,7 +96,7 @@ public struct RefreshableScrollView<Content: View>: View {
     
     struct SymbolView: View {
         var height: CGFloat
-        var loading: Bool
+        var refreshing: Bool
         var frozen: Bool
         var rotation: Angle
         var offset: CGFloat
@@ -123,21 +120,22 @@ public struct RefreshableScrollView<Content: View>: View {
             .frame(height: height)
             .fixedSize()
             .animation(.easeInOut(duration: 2))
-            .offset(y: -self.offset + (loading && frozen ? +self.offset : 0.0))
+            .offset(y: -height + (refreshing && frozen ? +height : 0.0))
         }
         
         var body: some View {
             Group {
-                if self.loading { // If loading, show the activity control
+                if self.refreshing { // If loading, show the activity control
                     VStack {
                         Spacer()
                         ActivityRep()
                         Spacer()
                     }
                     .frame(height: height).fixedSize()
-                    .offset(y: -height + (self.loading && self.frozen ? height : 0.0))
+                    .offset(y: -height + (self.refreshing && self.frozen ? height : 0.0))
                     
-                } else {
+                } else if offset > 0 {
+                    // only show the pull view if the offset is greater the zero
                     pullView()
                 }
             }
@@ -176,26 +174,6 @@ public struct RefreshableScrollView<Content: View>: View {
     public enum ScrollType {
         case scrollView
         case list
-    }
-    
-    struct WrapperView <Content>: View where Content: View {
-        let scrollType: ScrollType
-        let content: Content
-        
-        init(_ scrollType: ScrollType, @ViewBuilder content: ()-> Content) {
-            self.scrollType = scrollType
-            self.content = content()
-        }
-        
-        var body: some View {
-            Group {
-                if self.scrollType == .scrollView {
-                    ScrollView { self.content }
-                } else {
-                    List { self.content }
-                }
-            }
-        }
     }
     
 }
