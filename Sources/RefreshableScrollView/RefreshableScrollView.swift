@@ -107,6 +107,7 @@ public struct RefreshableScrollView<Content: View>: View {
                 HStack {
                     Text("Pull-down-to-refresh") // localization
                         .foregroundColor(.secondary)
+                        .font(.system(size: 13, weight: .regular, design: .default))
                     Image(systemName: "arrow.down") // If not loading, show the arrow
                         .resizable()
                         .foregroundColor(.secondary)
